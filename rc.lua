@@ -73,9 +73,9 @@ awful.layout.layouts = {
     -- awful.layout.suit.spiral,
     -- awful.layout.suit.spiral.dwindle,
     -- awful.layout.suit.max,
-    awful.layout.suit.max.fullscreen,
+    -- awful.layout.suit.max.fullscreen,
+    -- awful.layout.suit.floating,
     awful.layout.suit.tile.bottom,
-    awful.layout.suit.floating,
     -- awful.layout.suit.magnifier,
     -- awful.layout.suit.corner.nw,
     -- awful.layout.suit.corner.ne,
@@ -246,6 +246,15 @@ root.buttons(gears.table.join(
 
 -- {{{ Key bindings
 globalkeys = gears.table.join(
+
+   -- Hide wibox.
+   awful.key({ modkey }, "Escape", function ()
+         mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible
+   end),
+
+   awful.key({ modkey, "Shift" }, "a", function() awful.spawn("new_wall.sh") end,
+              {description="change wallpaper", group="awesome"}),
+
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev,
@@ -262,8 +271,8 @@ globalkeys = gears.table.join(
         {description = "focus next by index", group = "client"}
     ),
 
-    awful.key({ "Shift", "Control" }, "q", function() awful.spawn("suspend_lock.sh") end,
-              {description="suspend system", group="awesome"}),
+    awful.key({ "Shift", "Control" }, "q", function() awful.spawn("dmenu_input.sh -e") end,
+              {description="menu to quit system", group="awesome"}),
 
     awful.key({ modkey }, "F2", function() awful.spawn("firefox -new-window") end,
               {description="launch firefox", group="launcher"}),
@@ -271,8 +280,12 @@ globalkeys = gears.table.join(
     awful.key({ modkey, "Shift" }, "F2", function() awful.spawn("firefox -private-window") end,
               {description="launch firefox private window", group="launcher"}),
 
-    awful.key({ modkey }, "e", function() awful.spawn("editor.sh") end,
+    awful.key({ modkey }, "e", function() awful.spawn("editor.sh -e") end,
               {description="launch editor", group="launcher"}),
+
+    awful.key({ modkey, "Shift" }, "d", function() awful.spawn("dolphin") end,
+              {description="launch dolphin", group="launcher"}),
+
     awful.key({ modkey,           }, "k",
         function ()
             awful.client.focus.byidx(-1)
@@ -291,17 +304,14 @@ globalkeys = gears.table.join(
               {description = "focus the previous screen", group = "screen"}),
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto,
               {description = "jump to urgent client", group = "client"}),
-    -- awful.key({ modkey,           }, "Tab",
-    --     function ()
-    --         awful.client.focus.history.previous()
-    --         if client.focus then
-    --             client.focus:raise()
-    --         end
-    --     end,
-    --     {description = "go back", group = "client"}),
-
-    awful.key({ modkey, "Shift" }, "Return", function () awful.spawn("samedir.sh") end,
-              {description = "open a terminal in same directory.", group = "launcher"}),
+    awful.key({ modkey,           }, "Return",
+        function ()
+            awful.client.focus.history.previous()
+            if client.focus then
+                client.focus:raise()
+            end
+        end,
+        {description = "go back", group = "client"}),
 
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
@@ -323,11 +333,8 @@ globalkeys = gears.table.join(
               {description = "increase the number of columns", group = "layout"}),
     awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1, nil, true)    end,
               {description = "decrease the number of columns", group = "layout"}),
-    awful.key({ modkey,           }, "space", function () awful.layout.inc( 1)                end,
+    awful.key({ modkey, "Shift"	  }, "Return", function () awful.layout.inc( 1)                end,
               {description = "select next", group = "layout"}),
-    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(-1)                end,
-              {description = "select previous", group = "layout"}),
-
     awful.key({ modkey, "Control" }, "n",
               function ()
                   local c = awful.client.restore()
@@ -339,23 +346,23 @@ globalkeys = gears.table.join(
                   end
               end,
               {description = "restore minimized", group = "client"}),
-
     awful.key({ modkey },            "d",     function () awful.spawn("dmenu_input.sh -l") end,
               {description = "run prompt with dmenu", group = "launcher"}),
-
+    awful.key({ modkey,           }, "space", function () awful.spawn("samedir.sh") end,
+              {description = "open a terminal in same directory.", group = "launcher"}),
     awful.key({ modkey }, "`", function () awful.spawn("focus_window.sh") end,
               {description = "highlight current window", group = "launcher"}),
 
-    awful.key({ modkey }, "x",
-              function ()
-                  awful.prompt.run {
-                    prompt       = "Run Lua code: ",
-                    textbox      = awful.screen.focused().mypromptbox.widget,
-                    exe_callback = awful.util.eval,
-                    history_path = awful.util.get_cache_dir() .. "/history_eval"
-                  }
-              end,
-              {description = "lua execute prompt", group = "awesome"}),
+    -- awful.key({ modkey }, "x",
+    --           function ()
+    --               awful.prompt.run {
+    --                 prompt       = "Run Lua code: ",
+    --                 textbox      = awful.screen.focused().mypromptbox.widget,
+    --                 exe_callback = awful.util.eval,
+    --                 history_path = awful.util.get_cache_dir() .. "/history_eval"
+    --               }
+    --           end,
+    --           {description = "lua execute prompt", group = "awesome"}),
 
     awful.key({ modkey }, "p", function() menubar.show() end,
               {description = "show the menubar", group = "launcher"})
@@ -369,11 +376,21 @@ clientkeys = gears.table.join(
             c:raise()
         end,
         {description = "toggle fullscreen", group = "client"}),
-    awful.key({ modkey }, "Return", function (c) c:swap(awful.client.getmaster()) end,
-              {description = "move to master", group = "client"}),
+
+    -- TODO: Focused window should be master.
+    -- awful.key({ modkey }, "Return",
+    --    function (c)
+    --       c:swap(awful.client.getmaster())
+    --       awful.client.focus.history.previous()
+    --       if client.focus then
+    --          client.focus:raise()
+    --       end
+    --    end,
+    --           {description = "move to master", group = "client"}),
+
     awful.key({ modkey}, "q",      function (c) c:kill()                         end,
               {description = "close", group = "client"}),
-    awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
+    awful.key({ modkey, "Shift" }, "space",  awful.client.floating.toggle                     ,
               {description = "toggle floating", group = "client"}),
     awful.key({ modkey,           }, "o",      function (c) c:move_to_screen()               end,
               {description = "move to screen", group = "client"}),
@@ -408,9 +425,23 @@ clientkeys = gears.table.join(
 
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it work on any keyboard layout.
--- This should map on the top row of your keyboard, usually 1 to 9.
+-- This should map on the top row of your keyboard, usually 1 to 10.
 for i = 1, 10 do
     globalkeys = gears.table.join(globalkeys,
+
+   awful.key({ }, "XF86MonBrightnessUp", function() awful.util.spawn("brightness_change.sh -inc") end),
+
+   awful.key({ }, "XF86MonBrightnessDown", function() awful.util.spawn("brightness_change.sh -dec") end),
+
+   awful.key({ }, "XF86AudioRaiseVolume", function() awful.util.spawn("volume_change.sh -i") end),
+
+   awful.key({ }, "XF86AudioLowerVolume", function() awful.util.spawn("volume_change.sh -d") end),
+
+   awful.key({ }, "XF86AudioMute", function() awful.util.spawn("volume_change.sh -t") end),
+
+   awful.key({ }, "XF86AudioMicMute", function() awful.util.spawn("volume_change.sh -mm") end),
+
+
         -- View tag only.
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
