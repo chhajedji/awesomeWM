@@ -254,14 +254,14 @@ globalkeys = gears.table.join(
    awful.key({ }, "XF86AudioLowerVolume", function() awful.util.spawn("volume_change.sh -d") end),
    awful.key({ }, "XF86AudioMute", function() awful.util.spawn("volume_change.sh -t") end),
    awful.key({ }, "XF86AudioMicMute", function() awful.util.spawn("volume_change.sh -mm") end),
-   -- Hide wibox.
-   awful.key({ modkey }, "Escape", function ()
-         mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible
-   end),
 
+   -- Hide wibox.
+   awful.key({ modkey }, "Escape", function () mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible end,
+              {description="toggle menubar visiblity", group="awesome"}),
+   awful.key({ modkey, "Shift" }, "Escape", function() awful.spawn("wifi_toggle.sh") end,
+              {description="toggle wifi connectivity", group="awesome"}),
    awful.key({ modkey, "Shift" }, "a", function() awful.spawn("new_wall.sh") end,
               {description="change wallpaper", group="awesome"}),
-
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev,
@@ -269,7 +269,13 @@ globalkeys = gears.table.join(
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext,
               {description = "view next", group = "tag"}),
     awful.key({ modkey,           }, "Tab", awful.tag.history.restore,
-              {description = "go back", group = "tag"}),
+              {description = "switch to last tag", group = "awesome"}),
+   awful.key({ modkey, }, "c", function() awful.spawn("startpy3.sh") end,
+              {description="launch python prompt", group="awesome"}),
+   awful.key({ modkey, "Shift" }, "m", function() awful.spawn("dmenu_input.sh -m") end,
+              {description="open manual page", group="awesome"}),
+   awful.key({ modkey, "Shift" }, "n", function() awful.spawn("dmenu_input.sh -d") end,
+              {description="search word in dictionary", group="awesome"}),
 
     awful.key({ modkey,           }, "j",
         function ()
@@ -340,8 +346,8 @@ globalkeys = gears.table.join(
               {description = "increase the number of columns", group = "layout"}),
     awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1, nil, true)    end,
               {description = "decrease the number of columns", group = "layout"}),
-    awful.key({ modkey, "Shift"	  }, "Return", function () awful.layout.inc( 1)                end,
-              {description = "select next", group = "layout"}),
+    awful.key({ modkey, }, "i", function () awful.layout.inc( 1)                end,
+              {description = "select next layout", group = "layout"}),
     awful.key({ modkey, "Control" }, "n",
               function ()
                   local c = awful.client.restore()
@@ -359,6 +365,10 @@ globalkeys = gears.table.join(
               {description = "open a terminal in same directory.", group = "launcher"}),
     awful.key({ modkey }, "`", function () awful.spawn("focus_window.sh") end,
               {description = "highlight current window", group = "launcher"}),
+    awful.key({ modkey, "Shift" },   "o",     function () awful.spawn("dmenu_input.sh -f") end,
+              {description = "open a directory", group = "launcher"}),
+    awful.key({ modkey },            "o",     function () awful.spawn("dmenu_input.sh -r") end,
+              {description = "open git repo", group = "launcher"}),
 
     -- awful.key({ modkey }, "x",
     --           function ()
@@ -371,7 +381,9 @@ globalkeys = gears.table.join(
     --           end,
     --           {description = "lua execute prompt", group = "awesome"}),
 
-    awful.key({ modkey }, "p", function() menubar.show() end,
+    awful.key({ modkey}, "p", function() awful.spawn("dmenu_run") end,
+              {description = "run dmenu prompt", group = "launcher"}),
+    awful.key({ modkey, "Shift" }, "p", function() menubar.show() end,
               {description = "show the menubar", group = "launcher"})
 
 )
@@ -402,20 +414,20 @@ clientkeys = gears.table.join(
     awful.key({ modkey,           }, "o",      function (c) c:move_to_screen()               end,
               {description = "move to screen", group = "client"}),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
-              {description = "toggle keep on top", group = "client"})
-    -- awful.key({ modkey,           }, "n",
-    --     function (c)
-    --         -- The client currently has the input focus, so it cannot be
-    --         -- minimized, since minimized clients can't have the focus.
-    --         c.minimized = true
-    --     end ,
-    --     {description = "minimize", group = "client"}),
-    -- awful.key({ modkey,           }, "m",
-    --     function (c)
-    --         c.maximized = not c.maximized
-    --         c:raise()
-    --     end ,
-    --     {description = "(un)maximize", group = "client"}),
+              {description = "toggle keep on top", group = "client"}),
+    awful.key({ modkey,           }, "n",
+        function (c)
+            -- The client currently has the input focus, so it cannot be
+            -- minimized, since minimized clients can't have the focus.
+            c.minimized = true
+        end ,
+        {description = "minimize", group = "client"}),
+    awful.key({ modkey,           }, "m",
+        function (c)
+            c.maximized = not c.maximized
+            c:raise()
+        end ,
+        {description = "(un)maximize", group = "client"})
     -- awful.key({ modkey, "Control" }, "m",
     --     function (c)
     --         c.maximized_vertical = not c.maximized_vertical
