@@ -247,6 +247,12 @@ root.buttons(gears.table.join(
 -- {{{ Key bindings
 globalkeys = gears.table.join(
 
+   awful.key({ }, "XF86MonBrightnessUp", function() awful.util.spawn("brightness_change.sh -inc") end),
+   awful.key({ }, "XF86MonBrightnessDown", function() awful.util.spawn("brightness_change.sh -dec") end),
+   awful.key({ }, "XF86AudioRaiseVolume", function() awful.util.spawn("volume_change.sh -i") end),
+   awful.key({ }, "XF86AudioLowerVolume", function() awful.util.spawn("volume_change.sh -d") end),
+   awful.key({ }, "XF86AudioMute", function() awful.util.spawn("volume_change.sh -t") end),
+   awful.key({ }, "XF86AudioMicMute", function() awful.util.spawn("volume_change.sh -mm") end),
    -- Hide wibox.
    awful.key({ modkey }, "Escape", function ()
          mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible
@@ -428,19 +434,6 @@ clientkeys = gears.table.join(
 -- This should map on the top row of your keyboard, usually 1 to 10.
 for i = 1, 10 do
     globalkeys = gears.table.join(globalkeys,
-
-   awful.key({ }, "XF86MonBrightnessUp", function() awful.util.spawn("brightness_change.sh -inc") end),
-
-   awful.key({ }, "XF86MonBrightnessDown", function() awful.util.spawn("brightness_change.sh -dec") end),
-
-   awful.key({ }, "XF86AudioRaiseVolume", function() awful.util.spawn("volume_change.sh -i") end),
-
-   awful.key({ }, "XF86AudioLowerVolume", function() awful.util.spawn("volume_change.sh -d") end),
-
-   awful.key({ }, "XF86AudioMute", function() awful.util.spawn("volume_change.sh -t") end),
-
-   awful.key({ }, "XF86AudioMicMute", function() awful.util.spawn("volume_change.sh -mm") end),
-
 
         -- View tag only.
         awful.key({ modkey }, "#" .. i + 9,
