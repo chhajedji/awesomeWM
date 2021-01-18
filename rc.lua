@@ -232,16 +232,16 @@ awful.screen.connect_for_each_screen(function(s)
             -- Remove the ugly awesome symbol from status bar.
             -- mylauncher,
             s.mytaglist,
+            s.mylayoutbox,
             s.mypromptbox,
         },
         s.mytasklist, -- Middle widget
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-            mykeyboardlayout,
-            wibox.widget.systray(),
+            -- mykeyboardlayout,
             capslock,
             mytextclock,
-            s.mylayoutbox,
+            wibox.widget.systray(),
         },
     }
 end)
