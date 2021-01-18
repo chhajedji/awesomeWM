@@ -22,6 +22,10 @@ require("awful.hotkeys_popup.keys")
 local debian = require("debian.menu")
 local has_fdo, freedesktop = pcall(require, "freedesktop")
 
+-- Custom
+
+local capslock = require("capslock")
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -30,6 +34,11 @@ if awesome.startup_errors then
                      title = "Oops, there were errors during startup!",
                      text = awesome.startup_errors })
 end
+
+-- Capslock attributes
+capslock.forced_width = 17
+capslock.activated = "<b>A</b>"
+capslock.deactivated = "<b>a</b>"
 
 -- Handle runtime errors after startup
 do
@@ -230,6 +239,7 @@ awful.screen.connect_for_each_screen(function(s)
             layout = wibox.layout.fixed.horizontal,
             mykeyboardlayout,
             wibox.widget.systray(),
+            capslock,
             mytextclock,
             s.mylayoutbox,
         },
@@ -248,6 +258,7 @@ root.buttons(gears.table.join(
 -- {{{ Key bindings
 globalkeys = gears.table.join(
 
+   capslock.key,
    awful.key({ }, "XF86MonBrightnessUp", function() awful.util.spawn("brightness_change.sh -inc") end),
    awful.key({ }, "XF86MonBrightnessDown", function() awful.util.spawn("brightness_change.sh -dec") end),
    awful.key({ }, "XF86AudioRaiseVolume", function() awful.util.spawn("volume_change.sh -i") end),
